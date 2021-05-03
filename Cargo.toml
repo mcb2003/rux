@@ -2,6 +2,8 @@
 name = "rux"
 version = "0.1.0"
 authors = ["mcb2003 <mikeybuchan@hotmail.co.uk>"]
+license = "gpl-3-or-later"
+description = "A hobby OS project for x86_64, written in Rust"
 edition = "2018"
 
 [lib]
