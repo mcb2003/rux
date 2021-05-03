@@ -1,4 +1,5 @@
 global long_mode_start
+extern kernel_main
 
 section .text
 bits 64
@@ -11,7 +12,5 @@ long_mode_start:
     mov fs, ax
     mov gs, ax
 
-    ; Print "LONG" to the VGA text buffer
-    mov rax, 0x2f472f4e2f4f2f4c
-    mov qword [0xb8000], rax
-    hlt
+    ; Call the Rust main function of the kernel
+    jmp kernel_main
