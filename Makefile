@@ -44,3 +44,5 @@ ${rust_lib}: $(shell find src -iname '*.rs') $(target).json Cargo.toml Cargo.loc
 build/arch/$(arch)/%.o: src/arch/$(arch)/%.asm
 	@mkdir -p $(shell dirname $@)
 	@nasm -f elf64 $< -o $@
+
+-include target/$(target)/debug/librux.d
