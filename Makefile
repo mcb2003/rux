@@ -37,8 +37,8 @@ $(kernel): $(rust_lib) $(assembly_object_files) $(linker_script)
 	@ld --gc-sections -n -T $(linker_script) -o $(kernel) $(assembly_object_files) $(rust_lib)
 
 # Compile the Rust part of the kernel
-${rust_lib}: $(shell find src -iname '*.rs') $(target).json
-	@xargo build --target $(target)
+${rust_lib}: $(shell find src -iname '*.rs') $(target).json Cargo.toml Cargo.lock .cargo/config.toml 
+	@cargo build --target $(target).json
 
 # Assemble the architecture-specific assembly files
 build/arch/$(arch)/%.o: src/arch/$(arch)/%.asm
