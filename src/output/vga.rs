@@ -3,7 +3,7 @@ use lazy_static::lazy_static;
 use spin::Mutex;
 
 lazy_static! {
-    static ref BUFFER: Mutex<Writer> = Mutex::new(Writer::new());
+    static ref BUFFER: Mutex<Writer> = Mutex::new(unsafe { Writer::new() });
 }
 
 #[doc(hidden)]
@@ -122,9 +122,9 @@ impl Writer {
     /// # Safety
     ///
     /// The code must have access to the VGA text buffer at `0xb8000`.
-    fn new() -> Self {
+    unsafe fn new() -> Self {
             let color = ColorCode::new(Color::White, Color::Black);
-        let buff = unsafe { &mut *(0xb8000 as *mut Buffer) };
+        let buff = &mut *(0xb8000 as *mut Buffer);
         buff.clear_screen(color);
         Self {
             row: 0,
