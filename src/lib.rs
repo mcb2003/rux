@@ -2,8 +2,9 @@
 #![feature(abi_x86_interrupt)]
 #![feature(asm)]
 
-mod output;
+mod gdt;
 mod interrupts;
+mod output;
 
 use core::panic::PanicInfo;
 
@@ -15,6 +16,7 @@ fn panic(info: &PanicInfo) -> ! {
 
 #[no_mangle]
 pub extern "C" fn kernel_main() -> ! {
+    gdt::init();
     interrupts::init();
     println!("Hello, world!");
     unsafe {
