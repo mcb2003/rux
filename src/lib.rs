@@ -1,5 +1,6 @@
 #![no_std]
 #![feature(abi_x86_interrupt)]
+#![feature(asm)]
 
 mod output;
 mod interrupts;
@@ -16,5 +17,9 @@ fn panic(info: &PanicInfo) -> ! {
 pub extern "C" fn kernel_main() -> ! {
     interrupts::init();
     println!("Hello, world!");
+    unsafe {
+    x86_64::software_interrupt!(3);
+    }
+        println!("It didn't crash!");
     loop {}
 }
