@@ -18,7 +18,7 @@ pub extern "C" fn kernel_main() -> ! {
     interrupts::init();
     println!("Hello, world!");
     unsafe {
-    x86_64::software_interrupt!(3);
+    *(0xdeadbeaf as *mut u64) = 0xdeadbeaf;
     }
         println!("It didn't crash!");
     loop {}
