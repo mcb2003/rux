@@ -7,7 +7,7 @@ lazy_static! {
 }
 
 #[doc(hidden)]
-pub fn _print(args: ::core::fmt::Arguments) {
+pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
     BUFFER.lock().write_fmt(args).unwrap();
 }
@@ -94,6 +94,19 @@ impl Buffer {
             }
         }
     }
+
+    /// Clear the entire screen
+    pub fn clear_screen(&mut self, color: ColorCode) {
+        let blank = ScreenChar::new(b'\0', color);
+        for r in 0..Buffer::HEIGHT {
+        for c in 0..Buffer::WIDTH {
+            let ptr = self.mut_ptr_at(r, c);
+            unsafe {
+                ptr.write_volatile(blank);
+            }
+        }
+        }
+    }
 }
 
 pub struct Writer {
@@ -110,11 +123,14 @@ impl Writer {
     ///
     /// The code must have access to the VGA text buffer at `0xb8000`.
     fn new() -> Self {
+            let color = ColorCode::new(Color::White, Color::Black);
+        let buff = unsafe { &mut *(0xb8000 as *mut Buffer) };
+        buff.clear_screen(color);
         Self {
             row: 0,
             col: 0,
-            color: ColorCode::new(Color::White, Color::Black),
-            buff: unsafe { &mut *(0xb8000 as *mut Buffer) },
+            color,
+            buff,
         }
     }
 
