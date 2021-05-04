@@ -9,6 +9,5 @@ pub extern "C" fn kernel_main() -> ! {
     *(0xdeadbeaf as *mut u64) = 0xdeadbeaf;
     }
         println!("It didn't crash!");
-    loop {}
+    crate::hlt_loop();
 }
-

@@ -12,5 +12,11 @@ use core::panic::PanicInfo;
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("Kernel {}", info);
-    loop {}
+    hlt_loop();
+}
+
+pub(crate) fn hlt_loop() -> ! {
+    loop {
+        x86_64::instructions::hlt();
+    }
 }
