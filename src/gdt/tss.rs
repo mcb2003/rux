@@ -15,8 +15,7 @@ lazy_static! {
         tss.interrupt_stack_table[DOUBLE_FAULT_IST_INDEX as usize] = {
 
             let stack_start = VirtAddr::from_ptr(unsafe { &DOUBLE_FAULT_STACK });
-            let stack_end = stack_start + STACK_SIZE;
-            stack_end
+            stack_start + STACK_SIZE
         };
         tss
     };
