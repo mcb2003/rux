@@ -1,14 +1,16 @@
+PROFILE ?= debug
 arch ?= x86_64
 target ?= $(arch)-rux
-kernel := build/kernel-$(arch).bin
-iso := build/rux-$(arch).iso
+
+kernel := build/kernel-$(PROFILE)-$(arch).bin
+iso := build/rux-$(PROFILE)-$(arch).iso
 
 linker_script := src/arch/$(arch)/linker.ld
 grub_cfg := src/arch/$(arch)/grub.cfg
 assembly_source_files := $(wildcard src/arch/$(arch)/*.asm)
 assembly_object_files := $(patsubst src/arch/$(arch)/%.asm, \
 	build/arch/$(arch)/%.o, $(assembly_source_files))
-rust_lib := target/$(target)/debug/librux.a
+rust_lib := target/$(target)/$(PROFILE)/librux.a
 
 .PHONY: all clean run iso
 
@@ -38,11 +40,11 @@ $(kernel): $(rust_lib) $(assembly_object_files) $(linker_script)
 
 # Compile the Rust part of the kernel
 ${rust_lib}: $(shell find src -iname '*.rs') $(target).json Cargo.toml Cargo.lock .cargo/config.toml 
-	@cargo build --target $(target).json
+	@cargo -Z unstable-options build --target $(target).json --profile=$(PROFILE)
 
 # Assemble the architecture-specific assembly files
 build/arch/$(arch)/%.o: src/arch/$(arch)/%.asm
 	@mkdir -p $(shell dirname $@)
 	@nasm -f elf64 $< -o $@
 
--include target/$(target)/debug/librux.d
+-include target/$(target)/$(PROFILE)/librux.d
