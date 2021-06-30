@@ -99,12 +99,12 @@ impl Buffer {
     pub fn clear_screen(&mut self, color: ColorCode) {
         let blank = ScreenChar::new(b'\0', color);
         for r in 0..Buffer::HEIGHT {
-        for c in 0..Buffer::WIDTH {
-            let ptr = self.mut_ptr_at(r, c);
-            unsafe {
-                ptr.write_volatile(blank);
+            for c in 0..Buffer::WIDTH {
+                let ptr = self.mut_ptr_at(r, c);
+                unsafe {
+                    ptr.write_volatile(blank);
+                }
             }
-        }
         }
     }
 }
@@ -123,7 +123,7 @@ impl Writer {
     ///
     /// The code must have access to the VGA text buffer at `0xb8000`.
     unsafe fn new() -> Self {
-            let color = ColorCode::new(Color::White, Color::Black);
+        let color = ColorCode::new(Color::White, Color::Black);
         let buff = &mut *(0xb8000 as *mut Buffer);
         buff.clear_screen(color);
         Self {

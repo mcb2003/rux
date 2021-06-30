@@ -1,5 +1,5 @@
-use x86_64::{structures::tss::TaskStateSegment, VirtAddr};
 use lazy_static::lazy_static;
+use x86_64::{structures::tss::TaskStateSegment, VirtAddr};
 
 /// Index of the stack used when a double-fault occurs.
 pub const DOUBLE_FAULT_IST_INDEX: u16 = 6;
@@ -13,7 +13,6 @@ lazy_static! {
     pub(super) static ref TSS: TaskStateSegment = {
         let mut tss = TaskStateSegment::new();
         tss.interrupt_stack_table[DOUBLE_FAULT_IST_INDEX as usize] = {
-
             let stack_start = VirtAddr::from_ptr(unsafe { &DOUBLE_FAULT_STACK });
             stack_start + STACK_SIZE
         };

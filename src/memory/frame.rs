@@ -20,7 +20,7 @@ impl Frame {
         self.start_address() + FRAME_SIZE
     }
 
-pub fn range(&self) -> Range<usize> {
-    self.start_address()..self.end_address()
-}
+    pub fn range(&self) -> Range<usize> {
+        self.start_address()..self.end_address()
+    }
 }
