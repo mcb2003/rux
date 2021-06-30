@@ -27,7 +27,7 @@ pub extern "C" fn kernel_main(multiboot_info: usize) -> ! {
 
     let frame_alloc = SimpleFrameAllocator::new(&multiboot_info);
     for frame in frame_alloc.skip(159).take(8) {
-        println!("{:?}: range {:?}", frame, frame.range());
+        println!("{:?}", frame);
     }
 
     crate::hlt_loop();

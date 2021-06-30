@@ -1,10 +1,14 @@
-mod frame;
-pub use frame::Frame;
 mod simple_allocator;
 pub use simple_allocator::SimpleFrameAllocator;
 
-pub const FRAME_SIZE: usize = 4096;
+use x86_64::structures::paging::frame::{PhysFrameRangeInclusive, PhysFrame};
 
-pub trait FrameAllocator: Iterator<Item = Frame> {
-    fn dealloc(&mut self, frame: Frame);
+trait PhysFrameRangeExt {
+    fn contains(&self, frame: PhysFrame) -> bool;
+}
+
+impl PhysFrameRangeExt for PhysFrameRangeInclusive {
+    fn contains(&self, frame: PhysFrame) -> bool {
+        self.start <= frame && frame <= self.end
+    }
 }
