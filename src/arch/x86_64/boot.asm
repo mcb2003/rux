@@ -6,6 +6,8 @@ bits 32
 start:
     ; Set the stack pointer
     mov esp, stack_top
+    ; Move Multiboot info struct pointer to edit
+    mov edi, ebx
 
     ; Sanity checks
     call check_multiboot
