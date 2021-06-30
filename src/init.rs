@@ -12,5 +12,13 @@ pub extern "C" fn kernel_main(multiboot_info: usize) -> ! {
     println!("Starting {} kernel v.{}, booted by {:?}", KERNEL_NAME, KERNEL_VERSION, bootloader);
     let cmdline = multiboot_info.command_line_tag().map(|t| t.command_line()).unwrap_or("");
     println!("Kernel cmdline: {:?}", cmdline);
+
+    let mm_tag = multiboot_info.memory_map_tag()
+    .expect("Multiboot2 structure must have a memory map tag");
+println!("memory areas:");
+println!("{:17} {:10} {:10} {}", "Type", "Start", "End", "Length");
+for area in mm_tag.memory_areas() {
+    println!("{:17?} {:#010x} {:#010x} {}", area.typ(), area.start_address(), area.end_address(), area.size());
+}
     crate::hlt_loop();
 }
