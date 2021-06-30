@@ -1,6 +1,6 @@
 use core::ops::RangeInclusive;
 
-use multiboot2::{MemoryArea, MemoryAreaIter};
+use multiboot2::{MemoryArea, MemoryAreaIter, MemoryAreaType};
 
 use super::{Frame, FrameAllocator};
 
@@ -30,7 +30,7 @@ impl<'a> SimpleFrameAllocator<'a> {
     fn next_area(&mut self) {
             self.current_area = self.areas.clone().filter(|area| {
         let address = area.end_address() - 1;
-        Frame::containing_address(address as usize) >= self.next
+        area.typ() == MemoryAreaType::Available && Frame::containing_address(address as usize) >= self.next
     }).min_by_key(|area| area.start_address());
 
     if let Some(area) = self.current_area {
