@@ -5,6 +5,7 @@
 mod gdt;
 mod init;
 mod interrupts;
+mod memory;
 mod output;
 
 use core::panic::PanicInfo;
