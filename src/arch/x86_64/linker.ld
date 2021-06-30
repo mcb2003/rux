@@ -9,6 +9,23 @@ SECTIONS {
     }
 
     .text : {
-        *(.text)
+        *(.text .text.*)
+    }
+
+        .bss : {
+        *(.bss .bss.*)
+    }
+
+    .data.rel.ro : {
+        *(.data.rel.ro.local*) *(.data.rel.ro .data.rel.ro.*)
+    }
+
+
+        .rodata : {
+        *(.rodata .rodata.*)
+    }
+
+    .data.rel.ro : {
+        *(.data.rel.ro.local*) *(.data.rel.ro .data.rel.ro.*)
     }
 }
