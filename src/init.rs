@@ -55,13 +55,14 @@ fn print_elf_sections(mb: &multiboot2::BootInformation) {
         .elf_sections_tag()
         .expect("Multiboot2 structure must have an ELF sections tag");
     println!("ELF Sections:");
-    println!("{:24} {:10} {:10} {}", "Type", "Start", "End", "Name");
+    println!("{:24} {:10} {:10} {:10} {}", "Type", "Start", "End", "Flags", "Name");
     for section in elf_tag.sections() {
         println!(
-            "{:24?} {:#010x} {:#010x} {}",
+            "{:24?} {:#010x} {:#010x} {:10?} {}",
             section.section_type(),
             section.start_address(),
             section.end_address(),
+            section.flags(),
             section.name()
         );
     }
