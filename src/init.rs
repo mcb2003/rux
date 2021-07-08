@@ -1,4 +1,4 @@
-use crate::{memory::SimpleFrameAllocator, println};
+use crate::{memory::FrameAllocator, println};
 
 const KERNEL_NAME: &'static str = env!("CARGO_PKG_NAME");
 const KERNEL_VERSION: &'static str = env!("CARGO_PKG_VERSION");
@@ -25,7 +25,7 @@ pub extern "C" fn kernel_main(multiboot_info: usize) -> ! {
     print_memory_areas(&multiboot_info);
     print_elf_sections(&multiboot_info);
 
-    let frame_alloc = SimpleFrameAllocator::new(&multiboot_info);
+    let frame_alloc = FrameAllocator::new(&multiboot_info);
     for frame in frame_alloc.skip(159).take(8) {
         println!("{:?}", frame);
     }

@@ -1,5 +1,7 @@
+#[cfg(feature = "frame_alloc_simple")]
 mod simple_allocator;
-pub use simple_allocator::SimpleFrameAllocator;
+#[cfg(feature = "frame_alloc_simple")]
+pub use simple_allocator::SimpleFrameAllocator as FrameAllocator;
 
 use x86_64::structures::paging::frame::{PhysFrameRangeInclusive, PhysFrame};
 
