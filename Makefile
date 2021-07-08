@@ -22,7 +22,7 @@ clean:
 
 # Run the compiled OS with Qemu
 run: $(iso)
-	@qemu-system-x86_64 -cdrom $(iso)
+	@qemu-system-x86_64 -boot d -cdrom $(iso)
 
 iso: $(iso)
 
@@ -36,7 +36,7 @@ $(iso): $(kernel) $(grub_cfg)
 
 # Link the kernel
 $(kernel): $(rust_lib) $(assembly_object_files) $(linker_script)
-	@ld --gc-sections -n -T $(linker_script) -o $(kernel) $(assembly_object_files) $(rust_lib)
+	@ld.lld --gc-sections -n -T $(linker_script) -o $(kernel) $(assembly_object_files) $(rust_lib)
 
 # Compile the Rust part of the kernel
 ${rust_lib}: $(shell find src -iname '*.rs') $(target).json Cargo.toml Cargo.lock .cargo/config.toml 
