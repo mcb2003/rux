@@ -12,3 +12,17 @@ impl PhysFrameRangeExt for PhysFrameRangeInclusive {
         self.start <= frame && frame <= self.end
     }
 }
+
+#[macro_export]
+macro_rules! frame_containing {
+    ($addr: expr) => {
+        PhysFrame::containing_address(x86_64::PhysAddr::new($addr))
+    }
+}
+
+#[macro_export]
+macro_rules! frame_starting_at {
+    ($addr: expr) => {
+        PhysFrame::from_start_address(x86_64::PhysAddr::new($addr))
+    }
+}
