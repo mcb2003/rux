@@ -1,8 +1,10 @@
 use multiboot2::{MemoryArea, MemoryAreaIter, MemoryAreaType};
-use x86_64::structures::paging::{PhysFrame, FrameAllocator, frame::PhysFrameRangeInclusive, Size4KiB};
+use x86_64::structures::paging::{
+    frame::PhysFrameRangeInclusive, FrameAllocator, PhysFrame, Size4KiB,
+};
 
-use crate::{frame_containing, frame_starting_at};
 use super::PhysFrameRangeExt;
+use crate::{frame_containing, frame_starting_at};
 
 pub struct SimpleFrameAllocator<'a> {
     next: PhysFrame,
@@ -15,22 +17,20 @@ pub struct SimpleFrameAllocator<'a> {
 impl<'a> SimpleFrameAllocator<'a> {
     pub fn new(mb: &'a multiboot2::BootInformation) -> Self {
         // There should always be at least one ELF section
-        let kernel_start = frame_containing!(
-            mb.elf_sections_tag()
-                .expect("Multiboot2 ELF sections tag required")
-                .sections()
-                .map(|s| s.start_address())
-                .min()
-                .unwrap()
-        );
-        let kernel_end = frame_containing!(
-            mb.elf_sections_tag()
-                .expect("Multiboot2 ELF sections tag required")
-                .sections()
-                .map(|s| s.end_address())
-                .max()
-                .unwrap()
-        );
+        let kernel_start = frame_containing!(mb
+            .elf_sections_tag()
+            .expect("Multiboot2 ELF sections tag required")
+            .sections()
+            .map(|s| s.start_address())
+            .min()
+            .unwrap());
+        let kernel_end = frame_containing!(mb
+            .elf_sections_tag()
+            .expect("Multiboot2 ELF sections tag required")
+            .sections()
+            .map(|s| s.end_address())
+            .max()
+            .unwrap());
         let mut allocator = Self {
             next: frame_starting_at!(0).unwrap(),
             areas: mb
@@ -39,7 +39,10 @@ impl<'a> SimpleFrameAllocator<'a> {
                 .all_memory_areas(),
             current_area: None,
             kernel: PhysFrame::range_inclusive(kernel_start, kernel_end),
-            multiboot: PhysFrame::range_inclusive(frame_containing!(mb.start_address() as u64), frame_containing!(mb.end_address() as u64)),
+            multiboot: PhysFrame::range_inclusive(
+                frame_containing!(mb.start_address() as u64),
+                frame_containing!(mb.end_address() as u64),
+            ),
         };
         allocator.next_area();
         allocator
@@ -51,8 +54,7 @@ impl<'a> SimpleFrameAllocator<'a> {
             .clone()
             .filter(|area| {
                 let address = area.end_address() - 1;
-                area.typ() == MemoryAreaType::Available
-                    && frame_containing!(address) >= self.next
+                area.typ() == MemoryAreaType::Available && frame_containing!(address) >= self.next
             })
             .min_by_key(|area| area.start_address());
 
