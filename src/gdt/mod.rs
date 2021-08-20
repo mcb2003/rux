@@ -24,12 +24,12 @@ lazy_static! {
 }
 
 pub fn init() {
-    use x86_64::instructions::{segmentation::set_cs, tables::load_tss};
+    use x86_64::instructions::{segmentation::{CS, Segment}, tables::load_tss};
 
     // Load the GDT itself
     GDT.gdt.load();
     unsafe {
-        set_cs(GDT.code_sel); // Reload CS
+        CS::set_reg(GDT.code_sel); // Reload CS
         load_tss(GDT.tss_sel);
     }
 }
