@@ -1,32 +1,35 @@
-PROFILE ?= dev
-ifeq ($(PROFILE),dev)
-	PROFILE_DIR := debug
-else
-	PROFILE_DIR := $(PROFILE)
-endif
 arch ?= x86_64
 target ?= $(arch)-rux
+build_dir ?= build
+profile ?= dev
 
-kernel := build/kernel-$(PROFILE)-$(arch).bin
-iso := build/rux-$(PROFILE)-$(arch).iso
+ifeq ($(profile),dev)
+	profile_dir := debug
+else
+	profile_dir := $(profile)
+endif
+
+kernel := $(build_dir)/kernel-$(profile)-$(arch).bin
+iso := $(build_dir)/rux-$(profile)-$(arch).iso
 
 linker_script := src/arch/$(arch)/linker.ld
 grub_cfg := src/arch/$(arch)/grub.cfg
 assembly_source_files := $(wildcard src/arch/$(arch)/*.asm)
+rust_source_files := $(shell find src -iname '*.rs')
 assembly_object_files := $(patsubst src/arch/$(arch)/%.asm, \
-	build/arch/$(arch)/%.o, $(assembly_source_files))
-rust_lib := target/$(target)/$(PROFILE_DIR)/librux.a
+	$(build_dir)/arch/$(arch)/%.o, $(assembly_source_files))
+rust_lib := $(build_dir)/$(target)/$(profile_dir)/librux.a
 
 .PHONY: all clean check run iso
 
 all: $(kernel)
 
 clean:
-	-@rm -r build
-	@cargo clean
+	-@rm -r build 2> /dev/null
+	@cargo clean --target-dir $(build_dir)
 
 check:
-	@cargo -Z unstable-options check --target $(target).json --profile=$(PROFILE)
+	@cargo -Z unstable-options check --target $(target).json --profile=$(profile) --target-dir $(build_dir)
 
 # Run the compiled OS with Qemu
 run: $(iso)
@@ -36,23 +39,23 @@ iso: $(iso)
 
 # Create the ISO using grub-mkrescue
 $(iso): $(kernel) $(grub_cfg)
-	@mkdir -p build/isofiles/boot/grub
-	@cp $(kernel) build/isofiles/boot/kernel.bin
-	@cp $(grub_cfg) build/isofiles/boot/grub
-	@grub-mkrescue -o $(iso) build/isofiles 2> /dev/null
-	@rm -r build/isofiles
+	@mkdir -p $(build_dir)/isofiles/boot/grub
+	@cp $(kernel) $(build_dir)/isofiles/boot/kernel.bin
+	@cp $(grub_cfg) $(build_dir)/isofiles/boot/grub
+	@grub-mkrescue -o $(iso) $(build_dir)/isofiles 2> /dev/null
+	@rm -r $(build_dir)/isofiles
 
 # Link the kernel
 $(kernel): $(rust_lib) $(assembly_object_files) $(linker_script)
 	@ld.lld --gc-sections -n -T $(linker_script) -o $(kernel) $(assembly_object_files) $(rust_lib)
 
 # Compile the Rust part of the kernel
-${rust_lib}: $(shell find src -iname '*.rs') $(target).json Cargo.toml Cargo.lock .cargo/config.toml 
-	@cargo -Z unstable-options build --target $(target).json --profile=$(PROFILE)
+${rust_lib}: $(rust_source_files) $(target).json Cargo.toml Cargo.lock .cargo/config.toml 
+	@cargo -Z unstable-options build --target $(target).json --profile=$(profile) --target-dir $(build_dir)
 
 # Assemble the architecture-specific assembly files
-build/arch/$(arch)/%.o: src/arch/$(arch)/%.asm
+$(build_dir)/arch/$(arch)/%.o: src/arch/$(arch)/%.asm
 	@mkdir -p $(shell dirname $@)
 	@nasm -f elf64 $< -o $@
 
--include target/$(target)/$(PROFILE_DIR)/librux.d
+-include $(build_dir)/$(target)/$(profile_dir)/librux.d
