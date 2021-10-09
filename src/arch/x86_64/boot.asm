@@ -40,7 +40,8 @@ error:
     ; Output one character
     mov al, [edx]
     mov [ecx], al
-    add ecx, 2 ; Skip the color attributes
+    mov byte [ecx + 1], 0x04 ; Set the color attributes
+    add ecx, 2
     inc edx
     jmp .output
     cli
