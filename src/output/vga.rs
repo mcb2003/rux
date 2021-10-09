@@ -2,12 +2,12 @@ use core::fmt;
 
 use spin::{Lazy, Mutex};
 
-static BUFFER: Lazy<Mutex<Writer>> = Lazy::new(|| Mutex::new(unsafe { Writer::new() }));
+static WRITER: Lazy<Mutex<Writer>> = Lazy::new(|| Mutex::new(unsafe { Writer::new() }));
 
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
-    BUFFER.lock().write_fmt(args).unwrap();
+    WRITER.lock().write_fmt(args).unwrap();
 }
 /// A VGA color.
 #[allow(dead_code)]
