@@ -1,4 +1,9 @@
-PROFILE ?= debug
+PROFILE ?= dev
+ifeq ($(PROFILE),dev)
+	PROFILE_DIR := debug
+else
+	PROFILE_DIR := $(PROFILE)
+endif
 arch ?= x86_64
 target ?= $(arch)-rux
 
@@ -10,7 +15,7 @@ grub_cfg := src/arch/$(arch)/grub.cfg
 assembly_source_files := $(wildcard src/arch/$(arch)/*.asm)
 assembly_object_files := $(patsubst src/arch/$(arch)/%.asm, \
 	build/arch/$(arch)/%.o, $(assembly_source_files))
-rust_lib := target/$(target)/$(PROFILE)/librux.a
+rust_lib := target/$(target)/$(PROFILE_DIR)/librux.a
 
 .PHONY: all clean run iso
 
@@ -47,4 +52,4 @@ build/arch/$(arch)/%.o: src/arch/$(arch)/%.asm
 	@mkdir -p $(shell dirname $@)
 	@nasm -f elf64 $< -o $@
 
--include target/$(target)/$(PROFILE)/librux.d
+-include target/$(target)/$(PROFILE_DIR)/librux.d
