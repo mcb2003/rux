@@ -11,6 +11,7 @@ crate-type = ["staticlib"]
 
 [profile.release]
 panic = "abort"
+lto = "thin"
 
 [profile.dev]
 panic = "abort"
