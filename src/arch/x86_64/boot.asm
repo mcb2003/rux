@@ -33,14 +33,14 @@ error:
     mov dword [0xb8008], 0x043a0452
     mov word [0xb800c], 0x0420
     mov ecx, 0xb800e
+    mov ah, 0x04 ; Set the color attributes
     ; Print the null-terminated string
     .output:
     cmp byte [edx], 0
     je .halt
     ; Output one character
     mov al, [edx]
-    mov [ecx], al
-    mov byte [ecx + 1], 0x04 ; Set the color attributes
+    mov [ecx], ax
     add ecx, 2
     inc edx
     jmp .output
