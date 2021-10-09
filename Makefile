@@ -33,7 +33,7 @@ check:
 
 # Run the compiled OS with Qemu
 run: $(iso)
-	@qemu-system-x86_64 -boot d -cdrom $(iso)
+	@qemu-system-x86_64 -serial stdio -boot d -cdrom $(iso)
 
 iso: $(iso)
 
