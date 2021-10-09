@@ -1,21 +1,19 @@
-use lazy_static::lazy_static;
+use spin::Lazy;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
 use crate::{gdt::tss, println};
 
-lazy_static! {
-    static ref IDT: InterruptDescriptorTable = {
-        let mut idt = InterruptDescriptorTable::new();
-        unsafe {
-            idt.double_fault
-                .set_handler_fn(double_fault_handler)
-                .set_stack_index(tss::DOUBLE_FAULT_IST_INDEX);
-        }
-        idt.breakpoint.set_handler_fn(breakpoint_handler);
-        idt.divide_error.set_handler_fn(divide_error_handler);
-        idt
-    };
-}
+static IDT: Lazy<InterruptDescriptorTable> = Lazy::new(|| {
+    let mut idt = InterruptDescriptorTable::new();
+    unsafe {
+        idt.double_fault
+            .set_handler_fn(double_fault_handler)
+            .set_stack_index(tss::DOUBLE_FAULT_IST_INDEX);
+    }
+    idt.breakpoint.set_handler_fn(breakpoint_handler);
+    idt.divide_error.set_handler_fn(divide_error_handler);
+    idt
+});
 
 pub(super) fn init() {
     IDT.load();

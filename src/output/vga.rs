@@ -1,10 +1,8 @@
 use core::fmt;
-use lazy_static::lazy_static;
-use spin::Mutex;
 
-lazy_static! {
-    static ref BUFFER: Mutex<Writer> = Mutex::new(unsafe { Writer::new() });
-}
+use spin::{Lazy, Mutex};
+
+static BUFFER: Lazy<Mutex<Writer>> = Lazy::new(|| Mutex::new(unsafe { Writer::new() }));
 
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {

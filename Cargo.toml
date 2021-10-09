@@ -20,7 +20,6 @@ default = ["frame_alloc_simple"]
 frame_alloc_simple = []
 
 [dependencies]
-lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
 multiboot2 = "0.10.1"
 spin = "0.9.1"
 x86_64 = "0.14.3"
