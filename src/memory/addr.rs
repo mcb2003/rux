@@ -1,4 +1,4 @@
-use core::fmt;
+use core::{fmt, ops};
 
 use derive_more::{From, Into};
 
@@ -70,5 +70,13 @@ impl fmt::Debug for Addr {
 impl fmt::Display for Addr {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt::Debug::fmt(self, f)
+    }
+}
+
+impl ops::Add<usize> for Addr {
+    type Output = Self;
+
+    fn add(self, other: usize) -> Self::Output {
+        Self(self.0 + other)
     }
 }
