@@ -1,4 +1,4 @@
-use crate::{memory::SimpleFrameAllocator, println};
+use crate::{memory::phys::SimpleFrameAllocator, println};
 
 const KERNEL_NAME: &str = env!("CARGO_PKG_NAME");
 

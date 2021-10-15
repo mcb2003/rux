@@ -2,7 +2,8 @@ use core::ops::Range;
 
 use multiboot2::{MemoryArea, MemoryAreaIter, MemoryAreaType};
 
-use super::*;
+use super::{AllocatedFrame, FrameAllocator, MemoryAreaExt};
+use crate::memory::{Addr, Size4K, SizedRegion};
 
 #[derive(Debug)]
 pub struct SimpleFrameAllocator<'a> {
