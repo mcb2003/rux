@@ -53,27 +53,29 @@ impl<'a> SimpleFrameAllocator<'a> {
     }
 }
 
-impl FrameAllocator<Size4K> for SimpleFrameAllocator<'_> {
-    fn allocate(&mut self) -> Option<AllocatedFrame<Size4K>> {
+impl Iterator for SimpleFrameAllocator<'_> {
+    type Item = AllocatedFrame<Size4K>;
+
+    fn next(&mut self) -> Option<Self::Item> {
         let area = self.current_area?;
         let next = if self.kernel.contains(&self.next) {
-            self.kernel.end
+            self.kernel.end.align_up(Size4K::SIZE)
         } else if self.multiboot_info.contains(&self.next) {
-            self.multiboot_info.end
+            self.multiboot_info.end.align_up(Size4K::SIZE)
         } else {
             self.next
         };
-        if area.contains(next) {
-            self.next = next + Size4K::SIZE;
-            // Safety: We have already established that this frame is unused
-            Some(unsafe { AllocatedFrame::containing_addr(next) })
-        } else {
+        self.next = next + Size4K::SIZE;
+        if !area.contains(next) {
             self.next_area();
-            // I sure hope this can be tail recursed! It definitely should be possible
-            self.allocate()
+            self.next()
+        } else {
+            Some(unsafe { AllocatedFrame::containing_addr(next) })
         }
     }
+}
 
+impl FrameAllocator<Size4K> for SimpleFrameAllocator<'_> {
     fn deallocate(&mut self, _frame: AllocatedFrame<Size4K>) {
         unimplemented!()
     }

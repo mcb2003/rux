@@ -62,8 +62,7 @@ impl<S: SizedRegion> fmt::Debug for AllocatedFrame<S> {
     }
 }
 
-pub trait FrameAllocator<S: SizedRegion> {
-    fn allocate(&mut self) -> Option<AllocatedFrame<S>>;
+pub trait FrameAllocator<S: SizedRegion>: Iterator<Item = AllocatedFrame<S>> {
     fn deallocate(&mut self, frame: AllocatedFrame<S>);
 }
 

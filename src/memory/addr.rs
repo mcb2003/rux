@@ -80,3 +80,9 @@ impl ops::Add<usize> for Addr {
         Self(self.0 + other)
     }
 }
+
+impl ops::AddAssign<usize> for Addr {
+    fn add_assign(&mut self, rhs: usize) {
+        self.0 += rhs
+    }
+}
