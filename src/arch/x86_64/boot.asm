@@ -102,6 +102,10 @@ check_long_mode:
 
 ; Identity map the first 1 GiB of the kernel and setup paging
 setup_paging:
+; Recursively map the last p4 entry to the p4 table itself
+mov eax, p4_table
+    or eax, 0b11 ; present | writable
+    mov [p4_table + 511 * 8], eax
     ; Map the first p4 entry to the p3 table
     mov eax, p3_table
     or eax, 0b11 ; present | writable
