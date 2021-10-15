@@ -21,6 +21,7 @@ default = ["frame_alloc_simple"]
 frame_alloc_simple = []
 
 [dependencies]
+derive_more = { version = "0.99.16", features = ["from", "into"] }
 multiboot2 = "0.10.1"
 spin = "0.9.1"
 uart_16550 = "0.2.15"
