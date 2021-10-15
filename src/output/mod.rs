@@ -3,6 +3,7 @@ pub mod vga;
 
 /// Print to the VGA text buffer and over the first serial port.
 #[macro_export]
+
 macro_rules! print {
     ($($arg: tt)*) => {
         $crate::output::vga::_print(format_args!($($arg)*));
@@ -12,6 +13,7 @@ macro_rules! print {
 
 /// Print to the VGA text buffer and over the first serial port, appending a newline.
 #[macro_export]
+
 macro_rules! println {
     () => ($crate::print!("\n"));
     ($fmt: expr) => ($crate::print!(concat!($fmt, "\n")));
