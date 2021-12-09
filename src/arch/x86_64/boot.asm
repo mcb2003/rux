@@ -36,16 +36,18 @@ error:
     mov ah, 0x04 ; Set the color attributes
     ; Print the null-terminated string
     .output:
-    cmp byte [edx], 0
-    je .halt
-    ; Output one character
     mov al, [edx]
+    ; Stop at null terminator
+    and al, al
+    jz .halt
+    ; Output one character
     mov [ecx], ax
     add ecx, 2
     inc edx
     jmp .output
     cli
-    .halt: hlt
+    .halt:
+    hlt
     jmp .halt
 
 ; Checks if we were started from a Multiboot2 bootloader
@@ -115,7 +117,7 @@ mov eax, p4_table
     or eax, 0b11 ; present | writable
     mov [p3_table], eax
         ; map each P2 entry to a huge 2MiB page
-    xor ecx, ecx
+    mov ecx, 511
     .map_p2_table:
         ; map ecx-th P2 entry to a huge page that starts at address 2MiB*ecx
         mov eax, 0x200000  ; 2MiB
@@ -123,9 +125,8 @@ mov eax, p4_table
         or eax, 0b10000011 ; present | writable | hugepg
         mov [p2_table + ecx * 8], eax
 
-        inc ecx
-        cmp ecx, 512
-        jne .map_p2_table
+        dec ecx
+        jz .map_p2_table
     ret
 
 ; Enable the newly set up page-tables
