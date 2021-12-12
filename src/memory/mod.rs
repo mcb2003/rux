@@ -1,5 +1,6 @@
 mod addr;
 pub use addr::Addr;
+pub mod paging;
 pub mod phys;
 
 /// Specifies the size of a region (page or frame) of memory.
