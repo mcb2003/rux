@@ -25,25 +25,22 @@ start:
     jmp gdt64.code:long_mode_start
 
 ; Displays an error code on the screen and halts indefinitely
-; edx should contain a pointer to a null-terminated error message
+; edsishould contain a pointer to a null-terminated error message
 error:
 ; Print "ERROR: "
     mov dword [0xb8000], 0x04520445
     mov dword [0xb8004], 0x044f0452
     mov dword [0xb8008], 0x043a0452
     mov word [0xb800c], 0x0420
-    mov ecx, 0xb800e
+    mov edi, 0xb800e
     mov ah, 0x04 ; Set the color attributes
     ; Print the null-terminated string
     .output:
-    mov al, [edx]
+    lodsb ; Load next character
     ; Stop at null terminator
     and al, al
     jz .halt
-    ; Output one character
-    mov [ecx], ax
-    add ecx, 2
-    inc edx
+    stosw ; Output one character
     jmp .output
     cli
     .halt:
@@ -56,7 +53,7 @@ check_multiboot:
     jne .no_multiboot
     ret
     .no_multiboot:
-        mov edx, no_multiboot_msg
+        mov esi, no_multiboot_msg
         jmp error
 
 ; Check if CPUID is supported by attempting to flip the ID bit (bit 21)
@@ -82,7 +79,7 @@ check_cpuid:
     je .no_cpuid
     ret
     .no_cpuid:
-       mov edx, no_cpuid_msg
+       mov esi, no_cpuid_msg
         jmp error
 
 ; Check whether the CPU supports the 64 bit long mode
@@ -99,7 +96,7 @@ check_long_mode:
     jz .no_long_mode
     ret
     .no_long_mode:
-        mov edx, no_long_mode_msg
+        mov esi, no_long_mode_msg
         jmp error
 
 ; Identity map the first 1 GiB of the kernel and setup paging
