@@ -7,7 +7,7 @@ bits 32
 start:
     ; Set the stack pointer
     mov esp, stack_top
-    ; Move Multiboot info struct pointer to edi
+    ; Move multiboot info to edi (first argument of kernel_main)
     mov edi, ebx
 
     ; Sanity checks
@@ -25,7 +25,7 @@ start:
     jmp gdt64.code:long_mode_start
 
 ; Displays an error code on the screen and halts indefinitely
-; edsishould contain a pointer to a null-terminated error message
+; esi should contain a pointer to a null-terminated error message
 error:
 ; Print "ERROR: "
     mov dword [0xb8000], 0x04520445
@@ -42,8 +42,8 @@ error:
     jz .halt
     stosw ; Output one character
     jmp .output
-    cli
     .halt:
+    cli
     hlt
     jmp .halt
 
@@ -114,16 +114,18 @@ mov eax, p4_table
     or eax, 0b11 ; present | writable
     mov [p3_table], eax
         ; map each P2 entry to a huge 2MiB page
-    mov ecx, 511
+    xor ecx, ecx
     .map_p2_table:
         ; map ecx-th P2 entry to a huge page that starts at address 2MiB*ecx
-        mov eax, 0x200000  ; 2MiB
-        mul ecx            ; start address
+        mov eax, ecx
+        shl eax, 21
+        
         or eax, 0b10000011 ; present | writable | hugepg
         mov [p2_table + ecx * 8], eax
 
-        dec ecx
-        jz .map_p2_table
+inc ecx
+cmp ecx, 512
+        jb .map_p2_table
     ret
 
 ; Enable the newly set up page-tables
