@@ -5,13 +5,12 @@ const KERNEL_NAME: &str = env!("CARGO_PKG_NAME");
 const KERNEL_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[no_mangle]
-
 pub extern "C" fn kernel_main(multiboot_info: usize) -> ! {
     crate::gdt::init();
-
     crate::interrupts::init();
 
-    let multiboot_info = unsafe { multiboot2::load(multiboot_info) };
+    let multiboot_info =
+        unsafe { multiboot2::load(multiboot_info).expect("Invalid Multiboot 2 information") };
 
     let bootloader = multiboot_info
         .boot_loader_name_tag()

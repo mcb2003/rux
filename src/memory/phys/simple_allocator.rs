@@ -1,14 +1,13 @@
 use core::ops::Range;
 
-use multiboot2::{MemoryArea, MemoryAreaIter, MemoryAreaType};
+use multiboot2::{MemoryArea, MemoryMapTag};
 
 use super::{AllocatedFrame, FrameAllocator, MemoryAreaExt};
 use crate::memory::{Addr, Size4K, SizedRegion};
 
-#[derive(Debug)]
 pub struct SimpleFrameAllocator<'a> {
     next: Addr,
-    areas: MemoryAreaIter<'a>,
+    memory_map: &'a MemoryMapTag,
     current_area: Option<&'a MemoryArea>,
     kernel: Range<Addr>,
     multiboot_info: Range<Addr>,
@@ -30,10 +29,9 @@ impl<'a> SimpleFrameAllocator<'a> {
 
         let mut allocator = Self {
             next: Addr::from(0_usize),
-            areas: mb
+            memory_map: mb
                 .memory_map_tag()
-                .expect("No multiboot memory map tag provided")
-                .all_memory_areas(),
+                .expect("Multiboot2 memory map tag required"),
             current_area: None,
             kernel: (kernel_start..kernel_end).into(),
             multiboot_info: multiboot_start..multiboot_end,
@@ -44,11 +42,11 @@ impl<'a> SimpleFrameAllocator<'a> {
 
     fn next_area(&mut self) {
         self.current_area = self
-            .areas
-            .clone()
+            .memory_map
+            .memory_areas()
             .filter(|area| {
                 let address = Addr::from(area.end_address() - 1);
-                area.typ() == MemoryAreaType::Available && address >= self.next
+                address >= self.next
             })
             .min_by_key(|area| area.start_address());
     }
