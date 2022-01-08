@@ -14,7 +14,6 @@ impl Addr {
     /// Returns whether this address is considered to be `NULL`. Note that, even if this function
     /// returns `true`, it may still be possible to use this address, depending on how the page
     /// tables or physical frames are set up.
-
     pub fn is_null(self) -> bool {
         self == Self::NULL
     }
@@ -22,7 +21,6 @@ impl Addr {
     /// Cast this address to a const pointer of the specified type.
     /// # Safety
     /// Use of this pointer requires that it is a valid pointer to something of the correct type.
-
     pub unsafe fn as_ptr<T>(self) -> *const T {
         self.0 as _
     }
@@ -30,19 +28,19 @@ impl Addr {
     /// Cast this address to a mutable pointer of the specified type.
     /// # Safety
     /// Use of this pointer requires that it is a valid pointer to something of the correct type.
-
     pub unsafe fn as_mut_ptr<T>(self) -> *mut T {
         self.0 as _
     }
 
     /// Aligns the address to `alignment` (E.G. 4096) downwards.
-    pub fn align_down(self, alignment: usize) -> Addr {
+    /// #[inline]
+    pub fn align_down(self, alignment: usize) -> Self {
         Self(self.0 & !(alignment - 1))
     }
 
     /// Aligns the address to `alignment` (E.G. 4096) upwards.
-
-    pub fn align_up(self, alignment: usize) -> Addr {
+    #[inline]
+    pub fn align_up(self, alignment: usize) -> Self {
         Self(self.0 + alignment).align_down(alignment)
     }
 }
