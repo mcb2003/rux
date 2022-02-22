@@ -35,8 +35,20 @@ impl<L: PageTableLevel> Entry<L> {
         EntryFlags::from_bits_truncate(self.inner)
     }
 
+    pub fn set_flags(&mut self, flags: EntryFlags) {
+        self.inner = (self.inner & 0x000fffff_fffff000) | flags.bits();
+    }
+
     pub fn addr(&self) -> Addr {
         Addr::from(self.inner & 0x000fffff_fffff000)
+    }
+
+    pub fn set_addr(&mut self, addr: Addr) {
+        self.inner = (self.inner & !0x000fffff_fffff000) | u64::from(addr);
+    }
+
+    pub fn set(&mut self, addr: Addr, flags: EntryFlags) {
+        self.inner = (u64::from(addr) & 0x000fffff_fffff000) | flags.bits();
     }
 }
 
