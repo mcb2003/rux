@@ -32,6 +32,13 @@ impl<L: HigherPageTableLevel> PageTable<L> {
             None
         }
     }
+    pub fn next_table(&self, index: usize) -> Option<&PageTable<L::NextLevel>> {
+        self.next_table_ptr(index).map(|p| unsafe { p.as_ref() })
+    }
+    pub fn next_table_mut(&mut self, index: usize) -> Option<&mut PageTable<L::NextLevel>> {
+        self.next_table_ptr(index)
+            .map(|mut p| unsafe { p.as_mut() })
+    }
 }
 
 impl<L: PageTableLevel> Default for PageTable<L> {
