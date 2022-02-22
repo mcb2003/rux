@@ -11,15 +11,13 @@ static IDT: Lazy<InterruptDescriptorTable> = Lazy::new(|| {
             .set_handler_fn(double_fault_handler)
             .set_stack_index(tss::DOUBLE_FAULT_IST_INDEX);
     }
-
     idt.breakpoint.set_handler_fn(breakpoint_handler);
-
     idt.divide_error.set_handler_fn(divide_error_handler);
 
     idt
 });
 
-pub(super) fn init() {
+pub fn init() {
     IDT.load();
 }
 

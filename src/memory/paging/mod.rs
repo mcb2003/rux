@@ -1,60 +1,45 @@
+mod entry;
+pub use entry::{Entry, EntryFlags};
+mod table;
+pub use table::PageTable;
+
 use core::marker::PhantomData;
 
-use crate::memory::{Addr, SizedRegion};
+use super::{Addr, SizedRegion};
 
-/// The number of entries in a page table
-const ENTRY_COUNT: usize = 512;
+/// Specifies a page table level
+pub trait PageTableLevel: Copy {}
 
-/// An entry in a page table
-#[derive(Default)]
-pub struct Entry(u64);
-
-impl Entry {
-    pub fn is_unused(&self) -> bool {
-        self.0 == 0
-    }
-
-    pub fn set_unused(&mut self) {
-        self.0 = 0;
-    }
-
-    pub fn flags(&self) -> EntryFlags {
-        EntryFlags::from_bits_truncate(self.0)
-    }
-
-    pub fn addr(&self) -> Addr {
-        Addr::from(self.0 & 0x000fffff_fffff000)
-    }
+/// Specifies a page table level where the next level down is another page table
+pub trait HigherPageTableLevel: PageTableLevel {
+    /// Level of the next page table down
+    type NextLevel;
 }
 
-bitflags::bitflags! {
-    pub struct EntryFlags: u64 {
-        const PRESENT = 1 << 0;
-        const WRITABLE = 1 << 1;
-        const USER_ACCESSIBLE = 1 << 2;
-        const WRITE_THROUGH = 1 << 3;
-        const NO_CACHE = 1 << 4;
-        const ACCESSED = 1 << 5;
-        const DIRTY = 1 << 6;
-        const HUGE = 1 << 7;
-        const GLOBAL = 1 << 8;
-        const NO_EXEC = 1 << 63;
-    }
+#[derive(Clone, Copy)]
+enum Level1 {}
+#[derive(Clone, Copy)]
+enum Level2 {}
+#[derive(Clone, Copy)]
+enum Level3 {}
+#[derive(Clone, Copy)]
+enum Level4 {}
+
+impl PageTableLevel for Level1 {}
+impl PageTableLevel for Level2 {}
+impl PageTableLevel for Level3 {}
+impl PageTableLevel for Level4 {}
+
+impl HigherPageTableLevel for Level2 {
+    type NextLevel = Level1;
 }
 
-#[allow(dead_code)]
-impl EntryFlags {
-    pub fn readable(self) -> bool {
-        self.contains(Self::PRESENT)
-    }
+impl HigherPageTableLevel for Level3 {
+    type NextLevel = Level2;
+}
 
-    pub fn writable(self) -> bool {
-        self.contains(Self::PRESENT | Self::WRITABLE)
-    }
-
-    pub fn executable(self) -> bool {
-        self.contains(Self::PRESENT) && !self.contains(Self::NO_EXEC)
-    }
+impl HigherPageTableLevel for Level4 {
+    type NextLevel = Level3;
 }
 
 /// A virtual page of memory

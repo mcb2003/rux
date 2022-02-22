@@ -1,7 +1,6 @@
 use crate::{memory::phys::SimpleFrameAllocator, println};
 
 const KERNEL_NAME: &str = env!("CARGO_PKG_NAME");
-
 const KERNEL_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[no_mangle]
