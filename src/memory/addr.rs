@@ -59,6 +59,20 @@ impl From<u32> for Addr {
     }
 }
 
+#[cfg(target_pointer_width = "64")]
+impl From<Addr> for u64 {
+    fn from(addr: Addr) -> Self {
+        addr.0 as _
+    }
+}
+
+#[cfg(target_pointer_width = "32")]
+impl From<Addr> for u32 {
+    fn from(addr: Addr) -> Self {
+        addr.0 as _
+    }
+}
+
 impl fmt::Debug for Addr {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{:#16x}", self.0)
