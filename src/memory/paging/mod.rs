@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 mod entry;
 pub use entry::{Entry, EntryFlags};
 mod table;
@@ -13,17 +14,17 @@ pub trait PageTableLevel: Copy {}
 /// Specifies a page table level where the next level down is another page table
 pub trait HigherPageTableLevel: PageTableLevel {
     /// Level of the next page table down
-    type NextLevel;
+    type NextLevel: PageTableLevel;
 }
 
 #[derive(Clone, Copy)]
-enum Level1 {}
+pub enum Level1 {}
 #[derive(Clone, Copy)]
-enum Level2 {}
+pub enum Level2 {}
 #[derive(Clone, Copy)]
-enum Level3 {}
+pub enum Level3 {}
 #[derive(Clone, Copy)]
-enum Level4 {}
+pub enum Level4 {}
 
 impl PageTableLevel for Level1 {}
 impl PageTableLevel for Level2 {}
