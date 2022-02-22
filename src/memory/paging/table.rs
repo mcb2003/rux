@@ -1,3 +1,8 @@
+use core::{
+    ops::{Index, IndexMut},
+    slice::SliceIndex,
+};
+
 use super::{Entry, PageTableLevel};
 
 /// The number of entries in a page table
@@ -11,5 +16,27 @@ pub struct PageTable<L: PageTableLevel>([Entry<L>; ENTRY_COUNT]);
 impl<L: PageTableLevel> Default for PageTable<L> {
     fn default() -> Self {
         Self([Entry::default(); ENTRY_COUNT])
+    }
+}
+
+impl<Idx, L> Index<Idx> for PageTable<L>
+where
+    Idx: SliceIndex<[Entry<L>; ENTRY_COUNT]>,
+    L: PageTableLevel,
+{
+    type Output = Idx::Output;
+
+    fn index(&self, idx: Idx) -> &Idx::Output {
+        idx.index(&self.0)
+    }
+}
+
+impl<Idx, L> IndexMut<Idx> for PageTable<L>
+where
+    Idx: SliceIndex<[Entry<L>; ENTRY_COUNT]>,
+    L: PageTableLevel,
+{
+    fn index_mut(&mut self, idx: Idx) -> &mut Idx::Output {
+        idx.index_mut(&mut self.0)
     }
 }

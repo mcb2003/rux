@@ -1,5 +1,6 @@
 #![no_std]
 #![feature(abi_x86_interrupt)]
+#![feature(slice_index_methods)]
 
 mod gdt;
 mod init;
