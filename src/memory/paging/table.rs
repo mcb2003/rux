@@ -6,7 +6,7 @@ const ENTRY_COUNT: usize = 512;
 const RECURSIVE_ENTRY: usize = 511;
 
 #[repr(align(4096))]
-pub struct PageTable<L: PageTableLevel>([Entry<L>; 512]);
+pub struct PageTable<L: PageTableLevel>([Entry<L>; ENTRY_COUNT]);
 
 impl<L: PageTableLevel> Default for PageTable<L> {
     fn default() -> Self {
