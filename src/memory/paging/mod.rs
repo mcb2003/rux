@@ -1,3 +1,9 @@
+//! The paging (I.E. virtual memory) system.
+//! # Important
+//! For this module to be safe, the following
+//! invariants must *always* be upheld:
+//! * The 511th entry of the active P4 table must always be mapped to the active P4 table itself.
+
 #![allow(dead_code)]
 mod entry;
 pub use entry::{Entry, EntryFlags};
