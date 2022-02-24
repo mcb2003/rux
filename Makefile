@@ -21,7 +21,7 @@ assembly_object_files := $(patsubst src/arch/$(arch)/%.asm, \
 	$(build_dir)/arch/$(arch)/%.o, $(assembly_source_files))
 rust_lib := $(build_dir)/$(target)/$(profile_dir)/librux.a
 
-.PHONY: all clean check run iso
+.PHONY: all clean check doc run iso
 
 all: $(kernel)
 
@@ -31,6 +31,9 @@ clean:
 
 check:
 	@cargo -Z unstable-options check --target $(target).json --profile=$(profile) --target-dir $(build_dir)
+
+doc:
+	@cargo -Z unstable-options doc --target $(target).json --target-dir $(build_dir) --document-private-items
 
 # Run the compiled OS with Qemu
 run: $(iso)
