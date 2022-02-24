@@ -57,6 +57,11 @@ pub struct Page<S: SizedRegion> {
 
 impl<S: SizedRegion> Page<S> {
     fn containing_addr(addr: Addr) -> Self {
+        assert!(
+            addr.0 < 0x0000_8000_0000_0000 || addr.0 >= 0xffff_8000_0000_0000,
+            "invalid addr: {}",
+            addr
+        );
         Self {
             start: addr.align_down(S::SIZE),
             _marker: PhantomData,
